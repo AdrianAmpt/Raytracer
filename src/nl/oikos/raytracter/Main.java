@@ -466,7 +466,7 @@ public class Main {
 			});
 			menuItemFileSave.addActionListener(e ->
 			{
-				fileChooser.setSelectedFile(new File("render.jpg"));
+				fileChooser.setSelectedFile(new File(mainFrame.getTitle().replace("RayCast: ", "") + ".jpg"));
 				int action = fileChooser.showSaveDialog(mainFrame);
 				// if open save is pressed, save the file.
 				if (action == JFileChooser.APPROVE_OPTION)
@@ -482,7 +482,7 @@ public class Main {
 					}
 				}
 			});
-			menuItemFileExit.addActionListener(e -> mainFrame.dispose());
+			menuItemFileExit.addActionListener(e -> System.exit(0));
 			// render
 			menuItemRenderStart.addActionListener(e -> main.onRenderStart());
 			menuItemRenderPause.addActionListener(e -> main.onRenderPause());
@@ -576,7 +576,7 @@ public class Main {
             mainFrame.add(pane, BorderLayout.CENTER);
             mainFrame.add(statusPanel, BorderLayout.SOUTH);
 			mainFrame.pack();
-			mainFrame.setIconImage(new ImageIcon(Main.class.getResource("icon.png")).getImage());
+			mainFrame.setIconImage(new ImageIcon(Main.class.getResource("../../../icon.png")).getImage());
             mainFrame.setVisible(true);
 		});
     }

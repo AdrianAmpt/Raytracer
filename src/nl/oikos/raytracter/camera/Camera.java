@@ -15,9 +15,6 @@ public abstract class Camera
 	protected Vector3D up;				// up vector
 	float exposureTime;
 
-	protected boolean isStero;
-	protected int offset;
-
 	public Camera()
 	{
 		this.eye = new Point3D(0, 0, 500);
@@ -28,8 +25,6 @@ public abstract class Camera
 		this.v = Vector3D.Y;
 		this.w = Vector3D.Z;
 		this.exposureTime = 1;
-		this.isStero = false;
-		this.offset = 0;
 	}
 
 	public void computeUVW()
@@ -54,18 +49,23 @@ public abstract class Camera
 		}
 	}
 
-	public abstract RenderedPixel renderScene(World world, Pixel pixel);
+	public RenderedPixel renderScene(World world, Pixel pixel)
+	{
+		return this.renderStereo(world, pixel, 0);
+	}
+
+	public abstract RenderedPixel renderStereo(World world, Pixel pixel, double xOffset);
 
 	public void updateNumberOfSamples(int numberOfSamples){}
 
-	public boolean isStero()
+	public boolean isStereo()
 	{
-		return isStero;
+		return false;
 	}
 
 	public int getOffset()
 	{
-		return offset;
+		return 0;
 	}
 
 	public void setEye(Point3D eye)

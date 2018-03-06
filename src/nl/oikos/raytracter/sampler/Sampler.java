@@ -1,5 +1,6 @@
 package nl.oikos.raytracter.sampler;
 
+import nl.oikos.raytracter.util.MathUtils;
 import nl.oikos.raytracter.util.Point2D;
 import nl.oikos.raytracter.util.Point3D;
 import nl.oikos.raytracter.util.ShadeRec;
@@ -165,8 +166,8 @@ public abstract class Sampler
 
 		for (Point2D sample : samples)
 		{
-			double cosPhi = Math.cos(2.0 * Math.PI * sample.x);
-			double sinPhi = Math.sin(2.0 * Math.PI * sample.x);
+			double cosPhi = Math.cos(MathUtils.TWO_PI * sample.x);
+			double sinPhi = Math.sin(MathUtils.TWO_PI * sample.x);
 			double cosTheta = Math.pow((1.0 - sample.y), 1.0 / (exp + 1.0));
 			double sinTheta = Math.sqrt(1.0 - cosTheta * cosTheta);
 			double pu = sinTheta * cosPhi;
@@ -193,7 +194,7 @@ public abstract class Sampler
 			r2 	= samples.get(j).y;
 			z 	= 1.0 - 2.0 * r1;
 			r 	= Math.sqrt(1.0 - z * z);
-			phi = Math.PI * 2 * r2;
+			phi = MathUtils.TWO_PI * r2;
 			x 	= r * Math.cos(phi);
 			y 	= r * Math.sin(phi);
 			sphereSamples.add(new Point3D(x, y, z));

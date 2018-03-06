@@ -701,7 +701,7 @@ class Canvas extends JPanel
 
 		int width = world.viewPlane.width;
 		int height = world.viewPlane.height;
-		if (world.camera.isStero())
+		if (world.camera.isStereo())
 		{
 			width = width * 2 + world.camera.getOffset();
 		}
@@ -729,17 +729,17 @@ class Canvas extends JPanel
 		int jobWidth;
 		int jobHeight;
 
-		if (world.viewPlane.width < numberOfDivisions)
-			jobWidth = world.viewPlane.width;
+		if (width < numberOfDivisions)
+			jobWidth = width;
 		else
-			jobWidth = world.viewPlane.width / numberOfDivisions;
+			jobWidth = width / numberOfDivisions;
 
 		if (world.viewPlane.height < numberOfDivisions)
 			jobHeight = world.viewPlane.height;
 		else
 			jobHeight = world.viewPlane.height / numberOfDivisions;
 
-		List<Pixel> toRender = this.getPixelList(jobWidth, jobHeight);
+		List<Pixel> toRender = this.getPixelList(width, height, jobWidth, jobHeight);
 
 		int jobSize = jobWidth * jobHeight;
 
@@ -826,7 +826,7 @@ class Canvas extends JPanel
 
 	Timer timer;
 
-	private List<Pixel> getPixelList(int jobWidth, int jobHeight)
+	private List<Pixel> getPixelList(int width, int height, int jobWidth, int jobHeight)
 	{
 		List<Pixel> toRender = null;
 
@@ -836,7 +836,7 @@ class Canvas extends JPanel
 			case SPIRAL_OUT:
 			case SPIRAL_IN_AND_OUT:
 			case SPIRAL_IN_AND_OUT2:
-				toRender = spiral(0,0, world.viewPlane.width - 1, world.viewPlane.height - 1, Direction.RIGHT);
+				toRender = spiral(0,0, width - 1, height - 1, width, height, Direction.RIGHT);
 
 				if (renderMode == RenderMode.SPIRAL_OUT)
 					Collections.reverse(toRender);
@@ -871,8 +871,8 @@ class Canvas extends JPanel
 			case GRID:
 				toRender = new ArrayList<>(pixelsToRender);
 
-				int xRemainder = world.viewPlane.width % numberOfDivisions;
-				int yRemainder = world.viewPlane.height % numberOfDivisions;
+				int xRemainder = width % numberOfDivisions;
+				int yRemainder = height % numberOfDivisions;
 
 				int currentX;
 				int currentY;
@@ -896,9 +896,9 @@ class Canvas extends JPanel
 					if (xRemainder != 0)
 					{
 						int yStart = currentY;
-						int xStart = world.viewPlane.width - xRemainder;
+						int xStart = width - xRemainder;
 						int yEnd = currentY + jobHeight;
-						int xEnd = world.viewPlane.width;
+						int xEnd = width;
 						for (int ix = xStart; ix < xEnd; ix++)
 						{
 							for(int iy = yStart; iy < yEnd; iy++)
@@ -911,10 +911,10 @@ class Canvas extends JPanel
 				}
 				if (yRemainder != 0)
 				{
-					int yStart = world.viewPlane.height - yRemainder;
+					int yStart = height - yRemainder;
 					int xStart = 0;
-					int yEnd = world.viewPlane.height;
-					int xEnd = world.viewPlane.width;
+					int yEnd = height;
+					int xEnd = width;
 
 					for(int iy = yStart; iy < yEnd; iy++)
 					{
@@ -929,9 +929,9 @@ class Canvas extends JPanel
 				toRender = new ArrayList<>(pixelsToRender);
 				List<Pixel> toRenderHalf = new ArrayList<>(pixelsToRender / 2);
 
-				for (int y = 0; y < world.viewPlane.height; y++)
+				for (int y = 0; y < height; y++)
 				{
-					for (int x = 0; x < world.viewPlane.width; x++)
+					for (int x = 0; x < width; x++)
 					{
 						if (((x + y) % 2) == 0)
 							toRenderHalf.add(new Pixel(x, y));
@@ -948,9 +948,9 @@ class Canvas extends JPanel
 					toRender.add(center.get(center.size() - i - 1));
 				}
 
-				for (int y = 0; y < world.viewPlane.height; y++)
+				for (int y = 0; y < height; y++)
 				{
-					for (int x = 0; x < world.viewPlane.width; x++)
+					for (int x = 0; x < width; x++)
 					{
 						if (((x + y) % 2) == 1)
 							toRenderHalf.add(new Pixel(x, y));
@@ -971,8 +971,8 @@ class Canvas extends JPanel
 			case RANDOM:
 				toRender = new ArrayList<>(pixelsToRender);
 
-				for (int y = 0; y < world.viewPlane.height; y++)
-					for (int x = 0; x < world.viewPlane.width; x++)
+				for (int y = 0; y < height; y++)
+					for (int x = 0; x < width; x++)
 						toRender.add(new Pixel(x, y));
 
 				if (renderMode == RenderMode.RANDOM)
@@ -983,7 +983,7 @@ class Canvas extends JPanel
 		return toRender;
 	}
 
-	private List<Pixel> spiral(int x, int y, int width, int height, Direction direction)
+	private List<Pixel> spiral(int x, int y, int width, int height, int viewPlaneWidth, int viewPlaneHeight, Direction direction)
 	{
 		List<Pixel> currentList = new ArrayList<>();
 		Direction newDirection = Direction.RIGHT;
@@ -1013,7 +1013,7 @@ class Canvas extends JPanel
 				newDirection = Direction.LEFT;
 				break;
 			case LEFT:
-				value = world.viewPlane.width - (width + 1);
+				value = viewPlaneWidth - (width + 1);
 				while (x > value)
 				{
 					--x;
@@ -1030,7 +1030,7 @@ class Canvas extends JPanel
 					height -= 1;
 				}
 
-				value = world.viewPlane.height - (height + 1);
+				value = viewPlaneHeight - (height + 1);
 				while(y > value)
 				{
 					--y;
@@ -1043,7 +1043,7 @@ class Canvas extends JPanel
 
 		if (!(width <= 0 && height <= 0) && currentList.size() != 0)
 		{
-			List<Pixel> addList = this.spiral(x, y, width, height, newDirection);
+			List<Pixel> addList = this.spiral(x, y, width, height, viewPlaneWidth, viewPlaneHeight, newDirection);
 			currentList.addAll(addList);
 		}
 

@@ -9,7 +9,6 @@ import nl.oikos.raytracter.world.World;
  */
 public class Spherical extends Camera
 {
-	private static final double PI_ON_180 = Math.PI / 180;
 
 	/**
 	 * Psi_max in degrees.
@@ -31,11 +30,11 @@ public class Spherical extends Camera
 	{
 		Point2D pn = new Point2D(2 / (vp.pixelSize * vp.width) * point.x, 2 / (vp.pixelSize * vp.height) * point.y);
 
-		double lambda = pn.x * this.lambdaMax * PI_ON_180;
-		double psi = pn.y * this.psiMax * PI_ON_180;
+		double lambda = pn.x * this.lambdaMax * MathUtils.PI_ON_180;
+		double psi = pn.y * this.psiMax * MathUtils.PI_ON_180;
 
 		double phi = Math.PI - lambda;
-		double theta = 0.5 * Math.PI - psi;
+		double theta = MathUtils.HALF_PI - psi;
 
 		double sinPhi = Math.sin(phi);
 		double cosPhi = Math.cos(phi);
@@ -46,7 +45,7 @@ public class Spherical extends Camera
 	}
 
 	@Override
-	public RenderedPixel renderScene(World world, Pixel pixel)
+	public RenderedPixel renderStereo(World world, Pixel pixel, double xOffset)
 	{
 		RGBColor L = RGBColor.BLACK;
 		ViewPlane vp = new ViewPlane(world.viewPlane);
@@ -58,7 +57,7 @@ public class Spherical extends Camera
 		{
 			Point2D sp = vp.sampler.sampleUnitSquare(shadeRec);
 
-			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x);
+			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x) + xOffset;
 			pp.y = vp.pixelSize * (pixel.y - 0.5 * vp.height + sp.y);
 
 			Ray ray = new Ray(eye, getDirection(pp, vp));

@@ -9,8 +9,6 @@ import nl.oikos.raytracter.util.*;
 public class SpatialVaryingLambertian extends BRDF
 {
 
-	private static double INV_PI = 1 / Math.PI;
-
 	private double kd;
 	private Texture cd;
 
@@ -24,7 +22,7 @@ public class SpatialVaryingLambertian extends BRDF
 	@Override
 	public RGBColor f(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi)
 	{
-		return cd.getColor(sr).multiply(kd * INV_PI);
+		return cd.getColor(sr).multiply(kd * MathUtils.INV_PI);
 	}
 
 	@Override
@@ -43,9 +41,9 @@ public class SpatialVaryingLambertian extends BRDF
 		wiV = wiV.normalize();
 		wi.set(wiV);
 
-		pdf.set((sr.normal.dot(wi.get()) * INV_PI));
+		pdf.set((sr.normal.dot(wi.get()) * MathUtils.INV_PI));
 
-		return cd.getColor(sr).multiply(kd * INV_PI);
+		return cd.getColor(sr).multiply(kd * MathUtils.INV_PI);
 	}
 
 	@Override

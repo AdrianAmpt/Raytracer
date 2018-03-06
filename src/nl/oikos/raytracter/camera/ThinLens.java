@@ -45,7 +45,7 @@ public class ThinLens extends Camera
 	}
 
 	@Override
-	public RenderedPixel renderScene(World world, Pixel pixel)
+	public RenderedPixel renderStereo(World world, Pixel pixel, double xOffset)
 	{
 		RGBColor L = RGBColor.BLACK;
 		Ray ray = new Ray();
@@ -59,7 +59,7 @@ public class ThinLens extends Camera
 		for (int j = 0; j < vp.sampler.getNumberOfSamples(); j++)
 		{
 			Point2D sp = vp.sampler.sampleUnitSquare(shadeRec);
-			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x);
+			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x) + xOffset;
 			pp.y = vp.pixelSize * (pixel.y - 0.5 * vp.height + sp.y);
 
 			Point2D dp = lensSampler.sampleUnitDisk(shadeRec);

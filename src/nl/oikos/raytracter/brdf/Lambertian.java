@@ -8,8 +8,6 @@ import nl.oikos.raytracter.util.*;
 public class Lambertian extends BRDF
 {
 
-	private static double INV_PI = 1 / Math.PI;
-
 	private double kd;
 	private RGBColor cd;
 
@@ -23,7 +21,7 @@ public class Lambertian extends BRDF
 	@Override
 	public RGBColor f(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi)
 	{
-		return cd.multiply(kd * INV_PI);
+		return cd.multiply(kd * MathUtils.INV_PI);
 	}
 
 	@Override
@@ -42,9 +40,9 @@ public class Lambertian extends BRDF
 		wiV = wiV.normalize();
 		wi.set(wiV);
 
-		pdf.set((sr.normal.dot(wi.get()) * INV_PI));
+		pdf.set((sr.normal.dot(wi.get()) * MathUtils.INV_PI));
 
-		return cd.multiply(kd * INV_PI);
+		return cd.multiply(kd * MathUtils.INV_PI);
 	}
 
 	@Override

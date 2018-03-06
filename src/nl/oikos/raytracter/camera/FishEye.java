@@ -9,8 +9,6 @@ import nl.oikos.raytracter.world.World;
  */
 public class FishEye extends Camera
 {
-	private static final double PI_ON_180 = Math.PI / 180;
-
 	/**
 	 * Psi_max in degrees.
 	 */
@@ -30,7 +28,7 @@ public class FishEye extends Camera
 		if (rSquared.get() <= 1)
 		{
 			double r = Math.sqrt(rSquared.get());
-			double psi = r * this.psiMax * PI_ON_180;
+			double psi = r * this.psiMax * MathUtils.PI_ON_180;
 			double sinPsi = Math.sin(psi);
 			double cosPsi = Math.cos(psi);
 			double sinAlpha = pn.y / r;
@@ -45,7 +43,7 @@ public class FishEye extends Camera
 	}
 
 	@Override
-	public RenderedPixel renderScene(World world, Pixel pixel)
+	public RenderedPixel renderStereo(World world, Pixel pixel, double xOffset)
 	{
 		RGBColor L = RGBColor.BLACK;
 		ViewPlane vp = new ViewPlane(world.viewPlane);
@@ -58,7 +56,7 @@ public class FishEye extends Camera
 		{
 			Point2D sp = vp.sampler.sampleUnitSquare(shadeRec);
 
-			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x);
+			pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + sp.x) + xOffset;
 			pp.y = vp.pixelSize * (pixel.y - 0.5 * vp.height + sp.y);
 
 			Ray ray = new Ray(eye, getDirection(pp, vp, rSquared));

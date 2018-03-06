@@ -15,7 +15,7 @@ public class Orthographic  extends Camera
 	}
 
 	@Override
-	public RenderedPixel renderScene(World world, Pixel pixel)
+	public RenderedPixel renderStereo(World world, Pixel pixel, double xOffset)
 	{
 		RGBColor L = RGBColor.BLACK;
 		Ray ray = new Ray();
@@ -29,7 +29,7 @@ public class Orthographic  extends Camera
 		{
 			for (int q = 0; q < n; q++)
 			{
-				pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + (q + 0.5) / n);
+				pp.x = vp.pixelSize * (pixel.x - 0.5 * vp.width + (q + 0.5) / n) + xOffset;
 				pp.y = vp.pixelSize * (pixel.y - 0.5 * vp.width + (p + 0.5) / n);
 				ray.o = new Point3D(pp.x, pp.y, zw);
 				L = L.add(world.tracer.trace(ray));

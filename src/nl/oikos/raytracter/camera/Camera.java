@@ -56,7 +56,7 @@ public abstract class Camera
 
 	public abstract RenderedPixel renderScene(World world, Pixel pixel);
 
-	public void updateNumberSamples(int numberOfSamples){}
+	public void updateNumberOfSamples(int numberOfSamples){}
 
 	public boolean isStero()
 	{

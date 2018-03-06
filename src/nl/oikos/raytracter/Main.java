@@ -711,7 +711,7 @@ class Canvas extends JPanel
 		{
 			world.viewPlane.sampler.setNumberOfSamples(numberOfSamples);
 			world.viewPlane.sampler.initialize();
-			world.camera.updateNumberSamples(numberOfSamples);
+			world.camera.updateNumberOfSamples(numberOfSamples);
 		}
 
 		this.numberOfJobs = 0;

@@ -108,9 +108,9 @@ public class ThinLens extends Camera
 	}
 
 	@Override
-	public void updateNumberSamples(int numberOfSamples)
+	public void updateNumberOfSamples(int numberOfSamples)
 	{
-		super.updateNumberSamples(numberOfSamples);
+		super.updateNumberOfSamples(numberOfSamples);
 
 		this.lensSampler.setNumberOfSamples(numberOfSamples);
 		this.lensSampler.initialize();

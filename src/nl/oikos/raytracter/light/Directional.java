@@ -8,14 +8,10 @@ import nl.oikos.raytracter.util.*;
  */
 public class Directional extends Light
 {
-	private double ls;
-	private RGBColor color;
 	private Vector3D direction;
 
 	public Directional()
 	{
-		this.ls = 1;
-		this.color = RGBColor.WHITE;
 		this.direction = new Vector3D(0, 1, 0);
 	}
 
@@ -43,16 +39,6 @@ public class Directional extends Light
 		}
 
 		return false;
-	}
-
-	public void scaleRadiance(double ls)
-	{
-		this.ls = ls;
-	}
-
-	public void setColor(RGBColor color)
-	{
-		this.color = color;
 	}
 
 	public void setDirection(Vector3D direction)

@@ -10,8 +10,6 @@ public class Plane extends GeometricObject
 	protected Point3D center;
 	protected Normal3D normal;
 
-	protected static final double kEpsilon = 0.001;
-
 	public Plane()
 	{
 		this(Point3D.O, Normal3D.Y);
@@ -29,7 +27,7 @@ public class Plane extends GeometricObject
 	{
 		double t = center.subtract(ray.o).dot(normal) / ray.d.dot(normal);
 
-		if (t > kEpsilon)
+		if (t > MathUtils.kEpsilon)
 		{
 			tmin.set(t);
 			if (sr != null)

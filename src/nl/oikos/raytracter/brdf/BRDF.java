@@ -21,7 +21,7 @@ public abstract class BRDF
 		return RGBColor.BLACK;
 	}
 
-	public RGBColor sampleF(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi)
+	/*public RGBColor sampleF(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi)
 	{
 		return RGBColor.BLACK;
 	}
@@ -29,7 +29,7 @@ public abstract class BRDF
 	public RGBColor	sampleF(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi, Reference<Double> pdf)
 	{
 		return RGBColor.BLACK;
-	}
+	}*/
 
 	public RGBColor rho(ShadeRec sr, Reference<Vector3D> wo)
 	{

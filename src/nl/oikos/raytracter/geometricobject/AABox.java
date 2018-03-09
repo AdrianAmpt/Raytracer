@@ -11,8 +11,6 @@ public class AABox extends GeometricObject
 	protected Point3D point0;
 	protected Point3D point1;
 
-	protected static final double kEpsilon = 0.001;
-
 	public AABox()
 	{
 		this(Point3D.O, Point3D.I);
@@ -110,20 +108,24 @@ public class AABox extends GeometricObject
 		}
 
 
-		if (t0 < t1 && t1 > kEpsilon)
+		if (t0 < t1 && t1 > MathUtils.kEpsilon)
 		{        // condition for a hit
-			if (t0 > kEpsilon)
+			if (t0 > MathUtils.kEpsilon)
 			{
 				tmin.set(t0);
-				sr.normal = getNormal(faceIn);
+				if (sr != null)
+					sr.normal = getNormal(faceIn);
 			}
 			else
 			{
 				tmin.set(t1);
-				sr.normal = getNormal(faceOut);
+				if (sr != null)
+					sr.normal = getNormal(faceOut);
 			}
 
-			sr.localHitPoint = ray.o.add(ray.d.multiply(tmin.get()));
+			if (sr != null)
+				sr.localHitPoint = ray.o.add(ray.d.multiply(tmin.get()));
+
 			return true;
 		}
 

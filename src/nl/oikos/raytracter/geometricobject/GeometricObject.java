@@ -15,16 +15,14 @@ public abstract class GeometricObject
 {
 
 	protected Material material;
-	protected boolean shadows;
+	protected boolean shadows = true;
 
 	public abstract boolean hit(Ray ray, Reference<Double> tmin, ShadeRec sr);
 
 	public boolean shadowHit(Ray ray, Reference<Double> tmin)
 	{
-		if (!this.shadows)
-			return false;
+		return this.shadows && this.hit(ray, tmin, null);
 
-		return this.hit(ray, tmin, null);
 	}
 
 	public Material getMaterial()

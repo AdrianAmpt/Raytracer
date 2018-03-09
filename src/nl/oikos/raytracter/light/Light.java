@@ -11,10 +11,14 @@ import nl.oikos.raytracter.util.Vector3D;
 public abstract class Light
 {
 
+	protected double ls;
+	protected RGBColor color;
 	protected boolean castShadows;
 
 	public Light()
 	{
+		this.ls = 1;
+		this.color = RGBColor.WHITE;
 		this.castShadows = false;
 	}
 
@@ -42,4 +46,16 @@ public abstract class Light
 	{
 		this.castShadows = castShadows;
 	}
+
+	public void scaleRadiance(double ls)
+	{
+		this.ls = ls;
+	}
+
+	public void setColor(RGBColor color)
+	{
+		this.color = color;
+	}
+
+	public void updateNumberOfSamples(int numberOfSamples){}
 }

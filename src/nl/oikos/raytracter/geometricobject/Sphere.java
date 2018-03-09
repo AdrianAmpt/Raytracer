@@ -11,8 +11,6 @@ public class Sphere extends GeometricObject
 	protected Point3D center;
 	protected double radius;
 
-	protected static final double kEpsilon = 0.001;
-
 	public Sphere()
 	{
 		this(Point3D.O, 1);
@@ -45,7 +43,7 @@ public class Sphere extends GeometricObject
 			double denom = 2 * a;
 			t = (-b - e) / denom;
 
-			if (t > kEpsilon)
+			if (t > MathUtils.kEpsilon)
 			{
 				tmin.set(t);
 				if (sr != null)
@@ -59,7 +57,7 @@ public class Sphere extends GeometricObject
 
 			t = (-b + e) / denom;
 
-			if (t > kEpsilon)
+			if (t > MathUtils.kEpsilon)
 			{
 				tmin.set(t);
 				if (sr != null)

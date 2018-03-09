@@ -8,14 +8,10 @@ import nl.oikos.raytracter.util.*;
  */
 public class PointLight extends Light
 {
-	private double ls;
-	private RGBColor color;
 	private Point3D location;
 
 	public PointLight()
 	{
-		this.ls = 1;
-		this.color = RGBColor.WHITE;
 		this.location = Point3D.Y;
 	}
 
@@ -36,7 +32,7 @@ public class PointLight extends Light
 	{
 		Reference<Double> t = new Reference<>(0d);
 
-		double d = location.subtract(ray.o).length();
+		double d = location.distance(ray.o);
 		for (GeometricObject object : shadeRec.world.objects)
 		{
 			if (object.shadowHit(ray, t) && t.get() < d)
@@ -44,16 +40,6 @@ public class PointLight extends Light
 		}
 
 		return false;
-	}
-
-	public void scaleRadiance(double ls)
-	{
-		this.ls = ls;
-	}
-
-	public void setColor(RGBColor color)
-	{
-		this.color = color;
 	}
 
 	public void setLocation(Point3D location)

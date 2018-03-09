@@ -24,7 +24,7 @@ public class Lambertian extends BRDF
 		return cd.multiply(kd * MathUtils.INV_PI);
 	}
 
-	@Override
+	/*@Override
 	public RGBColor sampleF(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi, Reference<Double> pdf)
 	{
 		Vector3D w = new Vector3D(sr.normal);
@@ -43,7 +43,7 @@ public class Lambertian extends BRDF
 		pdf.set((sr.normal.dot(wi.get()) * MathUtils.INV_PI));
 
 		return cd.multiply(kd * MathUtils.INV_PI);
-	}
+	}*/
 
 	@Override
 	public RGBColor rho(ShadeRec sr, Reference<Vector3D> wo)

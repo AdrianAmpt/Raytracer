@@ -9,14 +9,8 @@ import nl.oikos.raytracter.util.Vector3D;
  */
 public class Ambient extends Light
 {
-	private double ls;
-	private RGBColor color;
 
-	public Ambient()
-	{
-		this.ls = 1;
-		this.color = RGBColor.WHITE;
-	}
+	public Ambient() {}
 
 	@Override
 	public Vector3D getDirection(ShadeRec shadeRec)
@@ -28,15 +22,5 @@ public class Ambient extends Light
 	public RGBColor L(ShadeRec shadeRec)
 	{
 		return this.color.multiply(this.ls);
-	}
-
-	public void scaleRadiance(double ls)
-	{
-		this.ls = ls;
-	}
-
-	public void setColor(RGBColor color)
-	{
-		this.color = color;
 	}
 }

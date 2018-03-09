@@ -712,6 +712,8 @@ class Canvas extends JPanel
 			world.viewPlane.sampler.setNumberOfSamples(numberOfSamples);
 			world.viewPlane.sampler.initialize();
 			world.camera.updateNumberOfSamples(numberOfSamples);
+			world.ambientLight.updateNumberOfSamples(numberOfSamples);
+			world.lights.forEach(l -> l.updateNumberOfSamples(numberOfSamples));
 		}
 
 		this.numberOfJobs = 0;
@@ -1090,6 +1092,7 @@ class RenderJob extends SwingWorker<Void, RenderedPixel>
 		for (Pixel pixel : this.pixels)
 		{
 			RenderedPixel renderedPixel;
+
 			try
 			{
 				renderedPixel = canvas.world.camera.renderScene(canvas.world, pixel);

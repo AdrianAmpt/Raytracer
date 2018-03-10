@@ -2,6 +2,7 @@ package nl.oikos.raytracter.material;
 
 import nl.oikos.raytracter.brdf.Lambertian;
 import nl.oikos.raytracter.light.Light;
+import nl.oikos.raytracter.texture.Texture;
 import nl.oikos.raytracter.util.*;
 
 /**
@@ -44,7 +45,8 @@ public class Matte extends Material
 
 				if (!inShadow)
 				{
-					L = L.add(diffuseBRDF.f(sr, wo, wi).multiply(light.L(sr)).multiply(ndotwi));
+					L = L.add(diffuseBRDF.f(sr, wo, wi).multiply(light.L(sr)).multiply(light.G(sr)).multiply(ndotwi / light.pdf(sr)));
+					//L = L.add(diffuseBRDF.f(sr, wo, wi).multiply(light.L(sr)).multiply(ndotwi));
 				}
 
 			}
@@ -61,6 +63,12 @@ public class Matte extends Material
 	public void setKd(double kd)
 	{
 		this.diffuseBRDF.setKd(kd);
+	}
+
+	public void setCd(Texture cd)
+	{
+		this.ambientBRDF.setCd(cd);
+		this.diffuseBRDF.setCd(cd);
 	}
 
 	public void setCd(RGBColor cd)

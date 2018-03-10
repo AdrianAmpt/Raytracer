@@ -4,9 +4,6 @@ import nl.oikos.raytracter.material.Material;
 import nl.oikos.raytracter.util.Ray;
 import nl.oikos.raytracter.util.Reference;
 import nl.oikos.raytracter.util.ShadeRec;
-import sun.security.provider.SHA;
-
-import java.util.function.BiConsumer;
 
 /**
  * Created by Adrian on 31-7-2017.
@@ -15,14 +12,18 @@ public abstract class GeometricObject
 {
 
 	protected Material material;
-	protected boolean shadows = true;
+	protected boolean shadows;
+
+	public GeometricObject()
+	{
+		this.shadows = true;
+	}
 
 	public abstract boolean hit(Ray ray, Reference<Double> tmin, ShadeRec sr);
 
 	public boolean shadowHit(Ray ray, Reference<Double> tmin)
 	{
 		return this.shadows && this.hit(ray, tmin, null);
-
 	}
 
 	public Material getMaterial()

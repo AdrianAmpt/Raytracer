@@ -4,7 +4,7 @@ import nl.oikos.raytracter.camera.Pinhole;
 import nl.oikos.raytracter.geometricobject.Plane;
 import nl.oikos.raytracter.light.Ambient;
 import nl.oikos.raytracter.light.Directional;
-import nl.oikos.raytracter.material.SpatialVaryingMatte;
+import nl.oikos.raytracter.material.Matte;
 import nl.oikos.raytracter.sampler.Jittered;
 import nl.oikos.raytracter.sampler.MultiJittered;
 import nl.oikos.raytracter.sampler.Regular;
@@ -64,7 +64,7 @@ public class Image04_01 extends World
 		checker.setColor1(RGBColor.BLACK);
 		checker.setColor2(RGBColor.GREEN);
 
-		SpatialVaryingMatte matte = new SpatialVaryingMatte();
+		Matte matte = new Matte();
 		matte.setKa(0.5);
 		matte.setKd(0.35);
 		matte.setCd(checker);

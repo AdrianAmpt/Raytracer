@@ -3,6 +3,7 @@ package nl.oikos.raytracter.material;
 import nl.oikos.raytracter.brdf.GlossySpecular;
 import nl.oikos.raytracter.brdf.Lambertian;
 import nl.oikos.raytracter.light.Light;
+import nl.oikos.raytracter.texture.Texture;
 import nl.oikos.raytracter.util.*;
 
 /**
@@ -47,7 +48,7 @@ public class Phong extends Material
 
 				if (!inShadow)
 				{
-					L = L.add(diffuseBRDF.f(sr, wo, wi).add(specularBRDF.f(sr, wo, wi)).multiply(light.L(sr)).multiply(ndotwi));
+					L = L.add(diffuseBRDF.f(sr, wo, wi).add(specularBRDF.f(sr, wo, wi)).multiply(light.L(sr)).multiply(ndotwi)).multiply(light.G(sr)).multiply(ndotwi / light.pdf(sr));
 				}
 
 			}
@@ -71,10 +72,20 @@ public class Phong extends Material
 		this.specularBRDF.setKs(ks);
 	}
 
+	public void setCd(Texture cd)
+	{
+		this.ambientBRDF.setCd(cd);
+		this.diffuseBRDF.setCd(cd);
+	}
 	public void setCd(RGBColor cd)
 	{
 		this.ambientBRDF.setCd(cd);
 		this.diffuseBRDF.setCd(cd);
+	}
+
+	public void setCs(Texture cs)
+	{
+		this.specularBRDF.setCs(cs);
 	}
 
 	public void setCs(RGBColor cs)

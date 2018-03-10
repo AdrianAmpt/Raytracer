@@ -27,14 +27,24 @@ public abstract class Light
 		return Vector3D.O;
 	}
 
+	public boolean inShadow(Ray ray, ShadeRec shadeRec)
+	{
+		return false;
+	}
+
 	public RGBColor L(ShadeRec shadeRec)
 	{
 		return RGBColor.BLACK;
 	}
 
-	public boolean inShadow(Ray ray, ShadeRec shadeRec)
+	public double G(ShadeRec shadeRec)
 	{
-		return false;
+		return 1;
+	}
+
+	public double pdf(ShadeRec shadeRec)
+	{
+		return 1;
 	}
 
 	public boolean castShadows()

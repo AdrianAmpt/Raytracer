@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 public class Main {
 
-	public static Supplier<? extends World> BuildConstructor = Image10_10::new;
+	public static Supplier<? extends World> BuildConstructor = ExampleImage1::new;
 
 	public static int STANDARD_DIMENSION = 400;
 

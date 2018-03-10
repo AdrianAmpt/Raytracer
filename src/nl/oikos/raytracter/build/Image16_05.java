@@ -6,7 +6,6 @@ import nl.oikos.raytracter.geometricobject.AABox;
 import nl.oikos.raytracter.geometricobject.Plane;
 import nl.oikos.raytracter.light.PointLight;
 import nl.oikos.raytracter.material.Matte;
-import nl.oikos.raytracter.material.SpatialVaryingMatte;
 import nl.oikos.raytracter.sampler.MultiJittered;
 import nl.oikos.raytracter.texture.Checker3D;
 import nl.oikos.raytracter.tracer.RayCast;
@@ -111,7 +110,7 @@ public class Image16_05 extends World
 		checker1.setColor1(new RGBColor(0.7));
 		checker1.setColor2(RGBColor.WHITE);
 
-		SpatialVaryingMatte svMatte1 = new SpatialVaryingMatte();
+		Matte svMatte1 = new Matte();
 		svMatte1.setKa(0.15);
 		svMatte1.setKd(1.0);
 		svMatte1.setCd(checker1);

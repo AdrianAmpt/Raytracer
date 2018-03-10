@@ -1,5 +1,7 @@
 package nl.oikos.raytracter.brdf;
 
+import nl.oikos.raytracter.texture.SingleColor;
+import nl.oikos.raytracter.texture.Texture;
 import nl.oikos.raytracter.util.*;
 
 /**
@@ -9,14 +11,14 @@ public class GlossySpecular extends BRDF
 {
 
 	private double ks;
-	private RGBColor cs;
+	private Texture cs;
 	private double exp;
 
 	public GlossySpecular()
 	{
 		super();
 		this.ks = 0;
-		this.cs = RGBColor.WHITE;
+		this.cs = new SingleColor(RGBColor.WHITE);
 		this.exp = 0;
 	}
 
@@ -30,7 +32,7 @@ public class GlossySpecular extends BRDF
 		double rdotwo = r.dot(wi.get());
 
 		if (rdotwo > 0)
-			L = cs.multiply(ks * Math.pow(rdotwo, exp));
+			L = cs.getColor(sr).multiply(ks * Math.pow(rdotwo, exp));
 
 		return L;
 	}
@@ -52,9 +54,14 @@ public class GlossySpecular extends BRDF
 		this.ks = ks;
 	}
 
-	public void setCs(RGBColor cs)
+	public void setCs(Texture cs)
 	{
 		this.cs = cs;
+	}
+
+	public void setCs(RGBColor cs)
+	{
+		this.cs = new SingleColor(cs);
 	}
 
 	public void setExp(double exp)

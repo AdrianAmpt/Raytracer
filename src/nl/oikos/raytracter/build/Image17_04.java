@@ -9,7 +9,6 @@ import nl.oikos.raytracter.light.Ambient;
 import nl.oikos.raytracter.light.AmbientOccluder;
 import nl.oikos.raytracter.light.PointLight;
 import nl.oikos.raytracter.material.Matte;
-import nl.oikos.raytracter.material.SpatialVaryingMatte;
 import nl.oikos.raytracter.sampler.MultiJittered;
 import nl.oikos.raytracter.sampler.Regular;
 import nl.oikos.raytracter.sampler.Sampler;
@@ -47,7 +46,6 @@ public class Image17_04 extends World
 		occluder.scaleRadiance(1);
 		occluder.setMinAmount(RGBColor.BLACK);
 		occluder.setSampler(sampler);
-		occluder.setShadows(true);
 		setAmbientLight(occluder);
 
 		// camera
@@ -62,22 +60,18 @@ public class Image17_04 extends World
 		matte1.setCd(new RGBColor(1, 1, 0));
 		matte1.setKa(0.75);
 		matte1.setKd(0);
-		matte1.setShadows(true);
 
 		Sphere sphere = new Sphere(new Point3D(0, 1, 0), 1);
 		sphere.setMaterial(matte1);
-		sphere.setShadows(true);
 		addGeometricObject(sphere);
 
 		Matte matte2 = new Matte();
 		matte2.setCd(RGBColor.WHITE);
 		matte2.setKa(0.75);
 		matte2.setKd(0);
-		matte1.setShadows(true);
 
 		Plane plane = new Plane(Point3D.O, Normal3D.Y);
 		plane.setMaterial(matte2);
-		plane.setShadows(true);
 		addGeometricObject(plane);
 	}
 }

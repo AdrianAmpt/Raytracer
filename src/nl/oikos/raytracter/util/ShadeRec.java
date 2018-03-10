@@ -18,6 +18,8 @@ public class ShadeRec
 	public int depth;
 	public double t;
 	public World world;
+	// for area light
+	public Point3D areaLightSamplePoint;
 
 	public Integer count;
 	public Integer jump;
@@ -51,6 +53,7 @@ public class ShadeRec
 		this.depth = shadeRec.depth;
 		this.t = shadeRec.t;
 		this.world = shadeRec.world;
+		this.areaLightSamplePoint = shadeRec.areaLightSamplePoint;
 
 		this.count = shadeRec.count;
 		this.jump = shadeRec.jump;

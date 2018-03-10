@@ -7,7 +7,7 @@ import nl.oikos.raytracter.util.*;
  */
 public class Plane extends GeometricObject
 {
-	protected Point3D center;
+	protected Point3D p0;
 	protected Normal3D normal;
 
 	public Plane()
@@ -18,26 +18,26 @@ public class Plane extends GeometricObject
 	public Plane(Point3D center, Normal3D normal)
 	{
 		super();
-		this.center = center;
+		this.p0 = center;
 		this.normal = normal;
 	}
 
 	@Override
 	public boolean hit(Ray ray, Reference<Double> tmin, ShadeRec sr)
 	{
-		double t = center.subtract(ray.o).dot(normal) / ray.d.dot(normal);
+		double t = p0.subtract(ray.o).dot(normal) / ray.d.dot(normal);
 
-		if (t > MathUtils.kEpsilon)
+		if (t <= MathUtils.kEpsilon)
+			return false;
+
+		tmin.set(t);
+
+		if (sr != null)
 		{
-			tmin.set(t);
-			if (sr != null)
-			{
-				sr.normal = normal;
-				sr.localHitPoint = ray.o.add(ray.d.multiply(t));
-			}
-			return true;
+			sr.normal = normal;
+			sr.localHitPoint = ray.o.add(ray.d.multiply(t));
 		}
 
-		return false;
+		return true;
 	}
 }

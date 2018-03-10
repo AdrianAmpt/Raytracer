@@ -7,7 +7,7 @@ import nl.oikos.raytracter.geometricobject.AABox;
 import nl.oikos.raytracter.geometricobject.Plane;
 import nl.oikos.raytracter.light.Ambient;
 import nl.oikos.raytracter.light.Directional;
-import nl.oikos.raytracter.material.SpatialVaryingMatte;
+import nl.oikos.raytracter.material.Matte;
 import nl.oikos.raytracter.sampler.MultiJittered;
 import nl.oikos.raytracter.texture.Checker3D;
 import nl.oikos.raytracter.tracer.RayCast;
@@ -93,7 +93,7 @@ public class Image10_10_Stereo extends World
 		checker1.setColor1(new RGBColor(1, 1, 0.33)); // lemon
 		checker1.setColor2(RGBColor.BLACK);
 
-		SpatialVaryingMatte matte1 = new SpatialVaryingMatte();
+		Matte matte1 = new Matte();
 		matte1.setKa(ka);
 		matte1.setKd(kd);
 		matte1.setCd(checker1);
@@ -108,7 +108,7 @@ public class Image10_10_Stereo extends World
 		checker2.setColor1(RGBColor.BLACK);
 		checker2.setColor2(new RGBColor(0.1, 1, 0.5)); // green
 
-		SpatialVaryingMatte matte2 = new SpatialVaryingMatte();
+		Matte matte2 = new Matte();
 		matte2.setKa(ka);
 		matte2.setKd(kd);
 		matte2.setCd(checker2);
@@ -123,7 +123,7 @@ public class Image10_10_Stereo extends World
 		checker3.setColor1(RGBColor.BLACK);
 		checker3.setColor2(new RGBColor(1, 0.6, 0.15)); // orange
 
-		SpatialVaryingMatte matte3 = new SpatialVaryingMatte();
+		Matte matte3 = new Matte();
 		matte3.setKa(ka);
 		matte3.setKd(kd);
 		matte3.setCd(checker3);
@@ -138,7 +138,7 @@ public class Image10_10_Stereo extends World
 		checker.setColor1(new RGBColor(0.25)); // gray
 		checker.setColor2(RGBColor.WHITE);
 
-		SpatialVaryingMatte matte = new SpatialVaryingMatte();
+		Matte matte = new Matte();
 		matte.setKa(0.5);
 		matte.setKd(0.35);
 		matte.setCd(checker);

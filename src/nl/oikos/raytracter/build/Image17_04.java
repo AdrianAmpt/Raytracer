@@ -32,7 +32,7 @@ public class Image17_04 extends World
 
 		// view plane
 
-		Sampler sampler = new MultiJittered(numberOfSamples);
+		Sampler sampler = new Regular(numberOfSamples);
 
 		viewPlane.setWidth(400);
 		viewPlane.setHeight(400);

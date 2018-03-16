@@ -1,15 +1,18 @@
 package nl.oikos.raytracter.geometricobject;
 
+import nl.oikos.raytracter.sampler.Sampler;
 import nl.oikos.raytracter.util.*;
 
 /**
  * Created by Adrian on 26-8-2017.
  */
-public class Sphere extends GeometricObject
+public class Sphere extends GeometricObject implements GeometricLightObject
 {
 
 	protected Point3D center;
 	protected double radius;
+	private Sampler sampler;
+	private double inverseArea;
 
 	public Sphere()
 	{
@@ -21,6 +24,7 @@ public class Sphere extends GeometricObject
 		super();
 		this.center = center;
 		this.radius = radius;
+		this.inverseArea = 1 / (4 * Math.PI * radius * radius);
 	}
 
 	@Override
@@ -85,5 +89,40 @@ public class Sphere extends GeometricObject
 	public void setRadius(double radius)
 	{
 		this.radius = radius;
+	}
+
+	@Override
+	public void setSampler(Sampler sampler)
+	{
+		this.sampler = sampler;
+		this.sampler.mapSamplesToSphere();
+	}
+
+	@Override
+	public void updateNumberOfSamples(int numberOfSamples)
+	{
+		this.sampler.setNumberOfSamples(numberOfSamples);
+		this.sampler.initialize();
+		this.sampler.mapSamplesToSphere();
+	}
+
+	@Override
+	public Point3D sample(ShadeRec sr)
+	{
+		return center.add(sampler.sampleSphere(sr).multiply(radius));
+	}
+
+	@Override
+	public double pdf(ShadeRec shadeRec)
+	{
+		return this.inverseArea;
+	}
+
+	@Override
+	public Normal3D getNormal(Point3D p)
+	{
+		Vector3D lineSegment =  p.subtract(center);
+
+		return new Normal3D(lineSegment.divide(radius));
 	}
 }

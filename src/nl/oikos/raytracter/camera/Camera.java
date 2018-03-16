@@ -10,10 +10,10 @@ public abstract class Camera
 {
 	protected Point3D eye;				// eye point
 	protected Point3D lookat; 			// lookat point
-	protected float ra;					// roll angle
+	protected double ra;					// roll angle
 	protected Vector3D u, v, w;			// orthonormal basis vectors
 	protected Vector3D up;				// up vector
-	float exposureTime;
+	double exposureTime;
 
 	public Camera()
 	{
@@ -98,7 +98,7 @@ public abstract class Camera
 		this.up = new Vector3D(x, y, z);
 	}
 
-	public void setExposureTime(float exposureTime)
+	public void setExposureTime(double exposureTime)
 	{
 		this.exposureTime = exposureTime;
 	}

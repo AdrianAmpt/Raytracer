@@ -160,7 +160,7 @@ public abstract class Sampler
 	 *
 	 * @param exp
 	 */
-	public void mapSamplesToHemisphere(final float exp)
+	public void mapSamplesToHemisphere(final double exp)
 	{
 		hemisphereSamples = new ArrayList<>(numberOfSamples * numberOfSets);
 

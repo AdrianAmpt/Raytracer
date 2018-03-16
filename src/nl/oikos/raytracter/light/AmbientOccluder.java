@@ -21,21 +21,20 @@ public class AmbientOccluder extends Light
 	@Override
 	public Vector3D getDirection(ShadeRec shadeRec)
 	{
-		return Vector3D.O;
+		Vector3D w = shadeRec.normal;
+		Vector3D v = w.cross(new Vector3D(0.0072, 1.0, 0.0034)).normalize();
+		Vector3D u = v.cross(w);
+
+		Point3D sp = shadeRec.lightSamplePoint.computeIfAbsent(this, k -> sampler.sampleHemisphere(shadeRec));
+		shadeRec.lightSamplePoint.put(this, sp);
+
+		return u.multiply(sp.x).add(v.multiply(sp.y)).add(w.multiply(sp.z));
 	}
 
 	@Override
 	public RGBColor L(ShadeRec shadeRec)
 	{
-		Vector3D w = shadeRec.normal;
-		Vector3D v = w.cross(new Vector3D(0.0072, 1.0, 0.0034)).normalize();
-		Vector3D u = v.cross(w);
-
-		Point3D sp = sampler.sampleHemisphere(shadeRec);
-		Vector3D direction = u.multiply(sp.x).add(v.multiply(sp.y)).add(w.multiply(sp.z));
-
-		//Ray shadowRay = new Ray(shadeRec.hitPoint, getDirection(shadeRec));
-		Ray shadowRay = new Ray(shadeRec.hitPoint, direction);
+		Ray shadowRay = new Ray(shadeRec.hitPoint, getDirection(shadeRec));
 
 		if (inShadow(shadowRay, shadeRec))
 			return minAmount.multiply(ls).multiply(color);

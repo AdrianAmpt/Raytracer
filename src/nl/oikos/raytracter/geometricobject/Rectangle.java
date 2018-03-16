@@ -24,6 +24,7 @@ public class Rectangle extends Plane implements GeometricLightObject
 		this.aLengthSquared = 1;
 		this.b = new Vector3D(0, 0, 1);
 		this.bLengthSquared = 1;
+		this.inverseArea = 1;
 	}
 
 	public Rectangle(Point3D p0, Vector3D a, Vector3D b)
@@ -91,7 +92,6 @@ public class Rectangle extends Plane implements GeometricLightObject
 	public void setSampler(Sampler sampler)
 	{
 		this.sampler = sampler;
-		this.sampler.initialize();
 	}
 
 	@Override

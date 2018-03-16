@@ -1,7 +1,12 @@
 package nl.oikos.raytracter.util;
 
+import nl.oikos.raytracter.light.AreaLight;
+import nl.oikos.raytracter.light.Light;
 import nl.oikos.raytracter.material.Material;
 import nl.oikos.raytracter.world.World;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Adrian on 1-8-2017.
@@ -19,7 +24,7 @@ public class ShadeRec
 	public double t;
 	public World world;
 	// for area light
-	public Point3D areaLightSamplePoint;
+	public Map<Light, Point3D> lightSamplePoint;
 
 	public Integer count;
 	public Integer jump;
@@ -36,6 +41,7 @@ public class ShadeRec
 		this.depth = 0;
 		this.t = 0;
 		this.world = world;
+		this.lightSamplePoint = new HashMap<>();
 
 		this.count = 0;
 		this.jump = 0;
@@ -53,7 +59,7 @@ public class ShadeRec
 		this.depth = shadeRec.depth;
 		this.t = shadeRec.t;
 		this.world = shadeRec.world;
-		this.areaLightSamplePoint = shadeRec.areaLightSamplePoint;
+		this.lightSamplePoint = shadeRec.lightSamplePoint;
 
 		this.count = shadeRec.count;
 		this.jump = shadeRec.jump;

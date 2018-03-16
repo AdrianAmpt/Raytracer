@@ -1,27 +1,29 @@
 package nl.oikos.raytracter.brdf;
 
+import nl.oikos.raytracter.texture.SingleColor;
+import nl.oikos.raytracter.texture.Texture;
 import nl.oikos.raytracter.util.*;
 
 /**
- * Created by Adrian on 23-8-2017.
+ * Created by Adrian on 2-9-2017.
  */
 public class Lambertian extends BRDF
 {
 
 	private double kd;
-	private RGBColor cd;
+	private Texture cd;
 
 	public Lambertian()
 	{
 		super();
 		this.kd = 0;
-		this.cd = RGBColor.BLACK;
+		this.cd = new SingleColor(RGBColor.BLACK);
 	}
 
 	@Override
 	public RGBColor f(ShadeRec sr, Reference<Vector3D> wo, Reference<Vector3D> wi)
 	{
-		return cd.multiply(kd * MathUtils.INV_PI);
+		return cd.getColor(sr).multiply(kd * MathUtils.INV_PI);
 	}
 
 	/*@Override
@@ -42,13 +44,13 @@ public class Lambertian extends BRDF
 
 		pdf.set((sr.normal.dot(wi.get()) * MathUtils.INV_PI));
 
-		return cd.multiply(kd * MathUtils.INV_PI);
+		return cd.getColor(sr).multiply(kd * MathUtils.INV_PI);
 	}*/
 
 	@Override
 	public RGBColor rho(ShadeRec sr, Reference<Vector3D> wo)
 	{
-		return cd.multiply(kd);
+		return cd.getColor(sr).multiply(kd);
 	}
 
 	public void setKd(double kd)
@@ -61,8 +63,13 @@ public class Lambertian extends BRDF
 		this.kd = ka;
 	}
 
-	public void setCd(RGBColor cd)
+	public void setCd(Texture cd)
 	{
 		this.cd = cd;
+	}
+
+	public void setCd(RGBColor cd)
+	{
+		this.cd = new SingleColor(cd);
 	}
 }

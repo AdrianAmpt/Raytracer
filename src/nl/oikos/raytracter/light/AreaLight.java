@@ -22,19 +22,19 @@ public class AreaLight extends Light
 	@Override
 	public Vector3D getDirection(ShadeRec sr)
 	{
-		sr.areaLightSamplePoint = object.sample(sr);
+		sr.lightSamplePoint.computeIfAbsent(this, l -> object.sample(sr));
 
 		return getWi(sr);
 	}
 
 	private Normal3D getLightNormal(ShadeRec sr)
 	{
-		return object.getNormal(sr.areaLightSamplePoint);
+		return object.getNormal(sr.lightSamplePoint.get(this));
 	}
 
 	private Vector3D getWi(ShadeRec sr)
 	{
-		return sr.areaLightSamplePoint.subtract(sr.hitPoint).normalize();
+		return sr.lightSamplePoint.get(this).subtract(sr.hitPoint).normalize();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class AreaLight extends Light
 	public double G(ShadeRec sr)
 	{
 		double ndotd = getLightNormal(sr).negate().dot(getWi(sr));
-		double d2 = sr.areaLightSamplePoint.distanceSqrd(sr.hitPoint);
+		double d2 = sr.lightSamplePoint.get(this).distanceSqrd(sr.hitPoint);
 
 		return ndotd / d2;
 	}
@@ -66,7 +66,7 @@ public class AreaLight extends Light
 	public boolean inShadow(Ray ray, ShadeRec sr)
 	{
 		Reference<Double> t = new Reference<>(0d);
-		double ts = sr.areaLightSamplePoint.subtract(ray.o).dot(ray.d);
+		double ts = sr.lightSamplePoint.get(this).subtract(ray.o).dot(ray.d);
 
 		for (GeometricObject object : sr.world.objects)
 		{

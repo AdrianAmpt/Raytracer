@@ -72,10 +72,10 @@ public class Vector3D
 	 * Returns a unit vector with the same direction as this
 	 * @return v/|v|
 	 */
-	public Vector3D normalize()
+	public Normal3D normalize()
 	{
 		double length = this.length();
-		return new Vector3D(x / length, y / length, z / length);
+		return new Normal3D(x / length, y / length, z / length);
 	}
 
 	/**

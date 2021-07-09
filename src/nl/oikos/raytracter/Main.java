@@ -1,25 +1,23 @@
 package nl.oikos.raytracter;
 
-import nl.oikos.raytracter.build.*;
-import nl.oikos.raytracter.thread.PausableThreadPoolExecutor;
-import nl.oikos.raytracter.util.*;
+import nl.oikos.raytracter.build.ExampleImage1;
+import nl.oikos.raytracter.render.Canvas;
+import nl.oikos.raytracter.render.StatusIndicator;
+import nl.oikos.raytracter.util.FileUtils;
 import nl.oikos.raytracter.world.World;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.Timer;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
-public class Main {
+public class Main implements StatusIndicator
+{
 
 	public static Supplier<? extends World> BuildConstructor = ExampleImage1::new;
 
@@ -37,6 +35,7 @@ public class Main {
 	private JLabel etrLabel;
 	private Canvas canvas;
 
+	@Override
 	public void setElapsed(long millis)
 	{
 		int hours = (int) (millis / (1000 * 60 * 60));
@@ -49,6 +48,7 @@ public class Main {
 		etrLabel.setText(message);
 	}
 
+	@Override
 	public void setEtr(long millis)
 	{
 		int hours = (int) (millis / (1000 * 60 * 60));
@@ -61,6 +61,7 @@ public class Main {
 		etrLabel.setText(message);
 	}
 
+	@Override
 	public void setStatusMessage(String message)
 	{
 		statusMessageLabel.setText(message);
@@ -149,8 +150,11 @@ public class Main {
 		}
 	}
 
+	@Override
 	public void onRenderCompleted()
 	{
+		canvas.executorService.shutdown();
+
 		// start
 		menuRender.getItem(0).setEnabled(true);
 		// pause
@@ -303,9 +307,9 @@ public class Main {
 
 			JMenu menuRender = new JMenu("Render");
 			JMenuItem menuItemRenderStart = new JMenuItem("Start");
-			JMenuItem menuItemRenderPause = new JMenuItem("Pause job submission");
+			JMenuItem menuItemRenderPause = new JMenuItem("Pause");
 			menuItemRenderPause.setEnabled(false);
-			JMenuItem menuItemRenderResume = new JMenuItem("Resume job submission");
+			JMenuItem menuItemRenderResume = new JMenuItem("Resume");
 			menuItemRenderResume.setEnabled(false);
 			menuRender.add(menuItemRenderStart);
 			menuRender.add(menuItemRenderPause);
@@ -580,570 +584,4 @@ public class Main {
             mainFrame.setVisible(true);
 		});
     }
-
-}
-
-class Canvas extends JPanel
-{
-
-	private enum Direction{UP, RIGHT, DOWN, LEFT}
-	public enum RenderDisplay{EVERY_PIXEL, EVERY_ROW, EVERY_JOB}
-	public enum RenderMode{GRID, RANDOM, SPIRAL_IN, SPIRAL_OUT, SPIRAL_IN_AND_OUT, SPIRAL_IN_AND_OUT2, SEQUENCE, SEQUENCE2}
-
-	Main main;
-	World world;
-	int numberOfJobs;
-
-	private BufferedImage image;
-	PausableThreadPoolExecutor executorService;
-
-	private int threadsPaused;
-	private long pausedTime;
-	private long startTime;
-	private int pixelsRendered;
-	private int pixelsToRender;
-
-	public int numberOfSamples;
-	public int numberOfThreads;
-	public int numberOfDivisions;
-	public RenderDisplay renderDisplay;
-	public RenderMode renderMode;
-
-	public Canvas(Main main)
-	{
-		super();
-		this.main = main;
-
-		this.image = new BufferedImage(Main.STANDARD_DIMENSION, Main.STANDARD_DIMENSION, BufferedImage.TYPE_INT_RGB);
-		this.setPreferredSize(new Dimension(Main.STANDARD_DIMENSION, Main.STANDARD_DIMENSION));
-	}
-
-	private void setImage(int width, int height)
-	{
-		this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		this.setPreferredSize(new Dimension(width, height));
-
-		switch (this.renderMode)
-		{
-			case GRID:
-			case SPIRAL_IN:
-			case SPIRAL_OUT:
-			case SPIRAL_IN_AND_OUT:
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
-						if ((x % 16 < 8) ^ (y % 16 < 8))
-							image.setRGB(x, y, new RGBIntColor(102).getRGB());
-						else
-							image.setRGB(x, y, new RGBIntColor(153).getRGB());
-					}
-				}
-				break;
-			default:
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
-						image.setRGB(x, y, RGBColor.BLACK.getRGB());
-					}
-				}
-				break;
-		}
-
-		this.repaint();
-		this.revalidate();
-	}
-
-	public void setImage(BufferedImage image)
-	{
-		this.image = image;
-		this.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
-		this.repaint();
-		this.revalidate();
-	}
-
-	public BufferedImage getImage()
-	{
-		return this.image;
-	}
-
-	public void renderPause()
-	{
-		this.executorService.pause();
-	}
-
-	public void renderResume()
-	{
-		if (pausedTime != 0)
-		{
-			this.startTime += System.currentTimeMillis() - pausedTime;
-		}
-		pausedTime = 0;
-		threadsPaused = 0;
-		this.executorService.resume();
-	}
-
-	public void threadPaused()
-	{
-		this.threadsPaused++;
-		if (threadsPaused == this.numberOfThreads)
-		{
-			pausedTime = System.currentTimeMillis();
-			this.main.setStatusMessage("Rendering paused");
-		}
-	}
-
-	public void render()
-	{
-		main.setStatusMessage("Building world...");
-
-		this.world = Main.BuildConstructor.get();
-		this.world.build();
-
-		main.setStatusMessage("Preparing Environment...");
-
-		int width = world.viewPlane.width;
-		int height = world.viewPlane.height;
-		if (world.camera.isStereo())
-		{
-			width = width * 2 + world.camera.getOffset();
-		}
-
-		int currentSamples = world.viewPlane.sampler.getNumberOfSamples();
-		if (numberOfSamples != currentSamples && numberOfSamples != 0)
-		{
-			world.viewPlane.sampler.setNumberOfSamples(numberOfSamples);
-			world.viewPlane.sampler.initialize();
-			world.camera.updateNumberOfSamples(numberOfSamples);
-			world.ambientLight.updateNumberOfSamples(numberOfSamples);
-			world.lights.forEach(l -> l.updateNumberOfSamples(numberOfSamples));
-		}
-
-		this.numberOfJobs = 0;
-		this.startTime = System.currentTimeMillis();
-		pixelsRendered = 0;
-		pixelsToRender = width * height;
-
-		this.setImage(width, height);
-
-		if (this.numberOfThreads == 0)
-			this.numberOfThreads = numberOfDivisions * numberOfDivisions;
-
-		main.setStatusMessage("Setting up Rendering Queue...");
-
-		int jobWidth;
-		int jobHeight;
-
-		if (width < numberOfDivisions)
-			jobWidth = width;
-		else
-			jobWidth = width / numberOfDivisions;
-
-		if (world.viewPlane.height < numberOfDivisions)
-			jobHeight = world.viewPlane.height;
-		else
-			jobHeight = world.viewPlane.height / numberOfDivisions;
-
-		List<Pixel> toRender = this.getPixelList(width, height, jobWidth, jobHeight);
-
-		int jobSize = jobWidth * jobHeight;
-
-		List<Pixel> current = new ArrayList<>(jobSize);
-		int id = 0;
-
-		executorService = new PausableThreadPoolExecutor(numberOfThreads, numberOfThreads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-
-		List<RenderJob> renderJobs = new ArrayList<>();
-
-		for(int y = 0; y < numberOfDivisions; y++)
-		{
-			for(int x = 0; x < numberOfDivisions; x++)
-			{
-				if (id < toRender.size())
-				{
-					for (int i = 0; i < jobSize; i++)
-					{
-						if (id >= toRender.size())
-							break;
-						current.add(toRender.get(id));
-						id++;
-					}
-
-					this.numberOfJobs++;
-
-					// create swing worker for current list
-					renderJobs.add(new RenderJob(this, current));
-
-					current.clear();
-				}
-			}
-		}
-
-		if(id < pixelsToRender)
-		{
-			while(id < pixelsToRender)
-			{
-				for(int i = 0; i < jobSize; i++)
-				{
-					current.add(toRender.get(id));
-					id++;
-					if(id == pixelsToRender)
-						i = jobSize;
-				}
-
-				this.numberOfJobs++;
-
-				// create swing worker for current list
-				renderJobs.add(new RenderJob(this, current));
-
-				current.clear();
-			}
-		}
-		toRender.clear();
-
-		for (RenderJob job : renderJobs)
-			executorService.execute(job);
-
-		executorService.shutdown();
-
-		timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				SwingUtilities.invokeLater(() ->
-				{
-					if (threadsPaused != numberOfThreads)
-					{
-						long interval = System.currentTimeMillis() - startTime;
-						double completed = ((double) pixelsRendered) / pixelsToRender;
-						double remaining = 1 - completed;
-
-						if (!Canvas.this.executorService.isPaused())
-							Canvas.this.main.setStatusMessage(String.format("Rendering...%d%%", (int) (completed * 100)));
-						Canvas.this.main.setElapsed(interval);
-						if (completed != 0)
-							Canvas.this.main.setEtr((long) ((interval / completed) * remaining));
-					}
-				});
-			}
-		}, 0, 500);
-	}
-
-	Timer timer;
-
-	private List<Pixel> getPixelList(int width, int height, int jobWidth, int jobHeight)
-	{
-		List<Pixel> toRender = null;
-
-		switch (renderMode)
-		{
-			case SPIRAL_IN:
-			case SPIRAL_OUT:
-			case SPIRAL_IN_AND_OUT:
-			case SPIRAL_IN_AND_OUT2:
-				toRender = spiral(0,0, width - 1, height - 1, width, height, Direction.RIGHT);
-
-				if (renderMode == RenderMode.SPIRAL_OUT)
-					Collections.reverse(toRender);
-				else if (renderMode == RenderMode.SPIRAL_IN_AND_OUT || renderMode == RenderMode.SPIRAL_IN_AND_OUT2)
-				{
-					List<Pixel> bounds = new ArrayList<>(toRender.subList(0, toRender.size() / 2));
-					List<Pixel> center = new ArrayList<>(toRender.subList(toRender.size() / 2, toRender.size()));
-					toRender.clear();
-					if (renderMode == RenderMode.SPIRAL_IN_AND_OUT)
-					{
-						for (int i = 0; i < center.size(); i++)
-						{
-							toRender.add(bounds.get(i));
-							toRender.add(center.get(center.size() - i - 1));
-						}
-					}
-					else if (renderMode == RenderMode.SPIRAL_IN_AND_OUT2)
-					{
-						for (int i = 0; i < center.size(); i += 2)
-						{
-							toRender.add(bounds.get(i));
-							toRender.add(center.get(center.size() - i - 1));
-						}
-						for (int i = center.size() - 1; i > 0; i -= 2)
-						{
-							toRender.add(bounds.get(i));
-							toRender.add(center.get(center.size() - i - 1));
-						}
-					}
-				}
-				break;
-			case GRID:
-				toRender = new ArrayList<>(pixelsToRender);
-
-				int xRemainder = width % numberOfDivisions;
-				int yRemainder = height % numberOfDivisions;
-
-				int currentX;
-				int currentY;
-				for (int y = 0; y < numberOfDivisions; y++)
-				{
-					currentY = y * jobHeight;
-					for (int x = 0; x < numberOfDivisions; x++)
-					{
-						currentX = x * jobWidth;
-						int xEnd = currentX + jobWidth;
-						int yEnd = currentY + jobHeight;
-						for (int iy = currentY; iy < yEnd; iy++)
-						{
-							for (int ix = currentX; ix < xEnd; ix++)
-							{
-								toRender.add(new Pixel(ix, iy));
-							}
-						}
-					}
-
-					if (xRemainder != 0)
-					{
-						int yStart = currentY;
-						int xStart = width - xRemainder;
-						int yEnd = currentY + jobHeight;
-						int xEnd = width;
-						for (int ix = xStart; ix < xEnd; ix++)
-						{
-							for(int iy = yStart; iy < yEnd; iy++)
-							{
-								toRender.add(new Pixel(ix, iy));
-							}
-						}
-					}
-
-				}
-				if (yRemainder != 0)
-				{
-					int yStart = height - yRemainder;
-					int xStart = 0;
-					int yEnd = height;
-					int xEnd = width;
-
-					for(int iy = yStart; iy < yEnd; iy++)
-					{
-						for(int ix = xStart; ix < xEnd; ix++)
-						{
-							toRender.add(new Pixel(ix, iy));
-						}
-					}
-				}
-				break;
-			case SEQUENCE2:
-				toRender = new ArrayList<>(pixelsToRender);
-				List<Pixel> toRenderHalf = new ArrayList<>(pixelsToRender / 2);
-
-				for (int y = 0; y < height; y++)
-				{
-					for (int x = 0; x < width; x++)
-					{
-						if (((x + y) % 2) == 0)
-							toRenderHalf.add(new Pixel(x, y));
-					}
-				}
-
-				List<Pixel> bounds = new ArrayList<>(toRenderHalf.subList(0, toRenderHalf.size() / 2));
-				List<Pixel> center = new ArrayList<>(toRenderHalf.subList(toRenderHalf.size() / 2, toRenderHalf.size()));
-				toRenderHalf.clear();
-
-				for (int i = 0; i < center.size(); i++)
-				{
-					toRender.add(bounds.get(i));
-					toRender.add(center.get(center.size() - i - 1));
-				}
-
-				for (int y = 0; y < height; y++)
-				{
-					for (int x = 0; x < width; x++)
-					{
-						if (((x + y) % 2) == 1)
-							toRenderHalf.add(new Pixel(x, y));
-					}
-				}
-
-				bounds = new ArrayList<>(toRenderHalf.subList(0, toRenderHalf.size() / 2));
-				center = new ArrayList<>(toRenderHalf.subList(toRenderHalf.size() / 2, toRenderHalf.size()));
-
-				for (int i = center.size() - 1; i >= 0; i--)
-				{
-					toRender.add(bounds.get(i));
-					toRender.add(center.get(center.size() - i - 1));
-				}
-
-				break;
-			case SEQUENCE:
-			case RANDOM:
-				toRender = new ArrayList<>(pixelsToRender);
-
-				for (int y = 0; y < height; y++)
-					for (int x = 0; x < width; x++)
-						toRender.add(new Pixel(x, y));
-
-				if (renderMode == RenderMode.RANDOM)
-					Collections.shuffle(toRender);
-				break;
-		}
-
-		return toRender;
-	}
-
-	private List<Pixel> spiral(int x, int y, int width, int height, int viewPlaneWidth, int viewPlaneHeight, Direction direction)
-	{
-		List<Pixel> currentList = new ArrayList<>();
-		Direction newDirection = Direction.RIGHT;
-		int value;
-
-		switch (direction)
-		{
-			case RIGHT:
-				value = width;
-				while (x <= value)
-				{
-					currentList.add(new Pixel(x,y));
-					++x;
-				}
-				--x;
-				++y;
-				newDirection = Direction.UP;
-				break;
-			case UP:
-				value = height;
-				while (y <= value)
-				{
-					currentList.add(new Pixel(x,y));
-					++y;
-				}
-				--y;
-				newDirection = Direction.LEFT;
-				break;
-			case LEFT:
-				value = viewPlaneWidth - (width + 1);
-				while (x > value)
-				{
-					--x;
-					currentList.add(new Pixel(x,y));
-				}
-				if(width >= 1)
-					width -= 1;
-
-				newDirection = Direction.DOWN;
-				break;
-			case DOWN:
-				if (height >= 1)
-				{
-					height -= 1;
-				}
-
-				value = viewPlaneHeight - (height + 1);
-				while(y > value)
-				{
-					--y;
-					currentList.add(new Pixel(x,y));
-				}
-				newDirection = Direction.RIGHT;
-				++x;
-				break;
-		}
-
-		if (!(width <= 0 && height <= 0) && currentList.size() != 0)
-		{
-			List<Pixel> addList = this.spiral(x, y, width, height, viewPlaneWidth, viewPlaneHeight, newDirection);
-			currentList.addAll(addList);
-		}
-
-		return currentList;
-	}
-
-	public void renderPixel(RenderedPixel pixel)
-	{
-		this.setRGB(pixel.x, pixel.y, pixel.color);
-
-		this.pixelsRendered ++;
-	}
-
-	public void setRGB(int x, int y, RGBColor color)
-	{
-		image.setRGB(x, y, color.getRGB());
-		this.repaint();
-	}
-
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.drawImage(this.image, null, null);
-	}
-}
-
-class RenderJob extends SwingWorker<Void, RenderedPixel>
-{
-
-	private Canvas canvas;
-	private List<Pixel> pixels;
-
-	RenderJob(Canvas canvas, List<Pixel> pixels)
-	{
-		this.canvas = canvas;
-		this.pixels = new ArrayList<>(pixels);
-	}
-
-	@Override
-	protected Void doInBackground() throws Exception
-	{
-		List<RenderedPixel> renderedPixels = new ArrayList<>(pixels.size());
-		for (Pixel pixel : this.pixels)
-		{
-			RenderedPixel renderedPixel;
-
-			try
-			{
-				renderedPixel = canvas.world.camera.renderScene(canvas.world, pixel);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				throw e;
-			}
-			renderedPixels.add(renderedPixel);
-
-			if (canvas.renderDisplay == Canvas.RenderDisplay.EVERY_PIXEL || (canvas.renderDisplay == Canvas.RenderDisplay.EVERY_ROW && renderedPixels.size() % 10 == 0))
-			{
-				publish(renderedPixels.toArray(new RenderedPixel[0]));
-				renderedPixels.clear();
-			}
-		}
-
-		// EVERY_ROW and EVERY_JOB
-		if (renderedPixels.size() > 0)
-		{
-			publish(renderedPixels.toArray(new RenderedPixel[0]));
-			renderedPixels.clear();
-		}
-
-		return null;
-	}
-
-	@Override
-	protected void process(List<RenderedPixel> chunks)
-	{
-		for (RenderedPixel pixel : chunks)
-		{
-			canvas.renderPixel(pixel);
-		}
-	}
-
-	@Override
-	protected void done()
-	{
-		super.done();
-
-		if (canvas.executorService.isPaused())
-		{
-			canvas.threadPaused();
-		}
-
-		if (--canvas.numberOfJobs == 0)
-		{
-			canvas.timer.cancel();
-			canvas.main.onRenderCompleted();
-		}
-	}
 }

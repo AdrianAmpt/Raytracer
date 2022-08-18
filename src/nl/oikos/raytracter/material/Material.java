@@ -21,6 +21,11 @@ public abstract class Material
 		return RGBColor.BLACK;
 	}
 
+	public RGBColor areaLightShade(ShadeRec shadeRec)
+	{
+		return RGBColor.BLACK;
+	}
+
 	public void setShadows(boolean castShadows)
 	{
 		this.castShadows = castShadows;

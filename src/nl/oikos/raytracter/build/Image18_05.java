@@ -1,17 +1,18 @@
 package nl.oikos.raytracter.build;
 
 import nl.oikos.raytracter.camera.Pinhole;
-import nl.oikos.raytracter.geometricobject.*;
+import nl.oikos.raytracter.geometricobject.AABox;
+import nl.oikos.raytracter.geometricobject.Plane;
+import nl.oikos.raytracter.geometricobject.Sphere;
 import nl.oikos.raytracter.light.AreaLight;
 import nl.oikos.raytracter.material.Emissive;
 import nl.oikos.raytracter.material.Matte;
 import nl.oikos.raytracter.sampler.MultiJittered;
 import nl.oikos.raytracter.sampler.Sampler;
-import nl.oikos.raytracter.tracer.RayCast;
+import nl.oikos.raytracter.tracer.AreaLighting;
 import nl.oikos.raytracter.util.Normal3D;
 import nl.oikos.raytracter.util.Point3D;
 import nl.oikos.raytracter.util.RGBColor;
-import nl.oikos.raytracter.util.Vector3D;
 import nl.oikos.raytracter.world.World;
 
 /**
@@ -36,7 +37,7 @@ public class Image18_05 extends World
 
 		backgroundColor = RGBColor.GRAY;
 
-		tracer = new RayCast(this);
+		tracer = new AreaLighting(this);
 
 		// camera
 		Pinhole pinHole = new Pinhole();

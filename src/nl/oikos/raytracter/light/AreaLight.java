@@ -22,7 +22,7 @@ public class AreaLight extends Light
 	@Override
 	public Vector3D getDirection(ShadeRec sr)
 	{
-		sr.lightSamplePoint.computeIfAbsent(this, l -> object.sample(sr));
+		sr.lightSamplePoint.put(this, object.sample(sr));
 
 		return getWi(sr);
 	}

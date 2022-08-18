@@ -30,6 +30,15 @@ public class Emissive extends Material
 			return RGBColor.BLACK;
 	}
 
+	@Override
+	public RGBColor areaLightShade(ShadeRec sr)
+	{
+		if (sr.normal.negate().dot(sr.ray.d) > 0.0)
+			return ce.getColor(sr).multiply(ls);
+		else
+			return RGBColor.BLACK;
+	}
+
 	public RGBColor L(ShadeRec sr)
 	{
 		return ce.getColor(sr).multiply(ls);

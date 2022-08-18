@@ -7,7 +7,6 @@ import nl.oikos.raytracter.light.Light;
 import nl.oikos.raytracter.tracer.Tracer;
 import nl.oikos.raytracter.util.*;
 
-import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +56,7 @@ public abstract class World
 		return new RenderedPixel(pixel.x, viewPlane.height - pixel.y - 1, mappedColor);
 	}
 
-	private final RGBColor maxToOne(final RGBColor c)
+	private RGBColor maxToOne(final RGBColor c)
 	{
 		double maxValue = Math.max(c.r, Math.max(c.g, c.b));
 
@@ -74,7 +73,7 @@ public abstract class World
 	 * @param rawColor
 	 * @return
 	 */
-	private final RGBColor clampToColor(final RGBColor rawColor)
+	private RGBColor clampToColor(final RGBColor rawColor)
 	{
 		if (rawColor.r > 1.0 || rawColor.g > 1.0 || rawColor.b > 1.0)
 			return new RGBColor(1f, 0f, 0f);
@@ -156,7 +155,7 @@ public abstract class World
 		this.lights.add(light);
 	}
 
-	private static Field[] getallFields(Class<?> clazz)
+	private static Field[] getAllFields(Class<?> clazz)
 	{
 		//determine fields declared in this class only (no fields of superclass)
 		Field[] fields = clazz.getDeclaredFields();
@@ -166,21 +165,15 @@ public abstract class World
 		Field[] parentFields;
 
 		if (parentClass != null)
-			parentFields = World.getallFields(parentClass);
+			parentFields = World.getAllFields(parentClass);
 		else
 			parentFields = new Field[0];
 
 		Field[] result = new Field[fields.length + parentFields.length];
 
-		for (int i = 0; i < parentFields.length; i++)
-		{
-			result[i] = parentFields[i];
-		}
+		System.arraycopy(parentFields, 0, result, 0, parentFields.length);
 
-		for (int i = 0; i < fields.length; i++)
-		{
-			result[parentFields.length + i] = fields[i];
-		}
+		System.arraycopy(fields, 0, result, parentFields.length, fields.length);
 
 		return result;
 	}
@@ -201,18 +194,20 @@ public abstract class World
 		result.append(newLine);
 
 		//determine fields declared in this class only (no fields of superclass)
-		Field[] fields = World.getallFields(object.getClass());
+		Field[] fields = World.getAllFields(object.getClass());
 
 		//print field names paired with their values
-		for ( Field field : fields ) {
-
-			if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+		for ( Field field : fields )
+		{
+			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+			{
 				continue;
 			}
 
 			for (int i = 0; i <= level; i++)
 				result.append("  ");
-			try {
+			try
+			{
 				result.append( field.getName() );
 				result.append(": ");
 				//requires access to private field:
@@ -234,13 +229,17 @@ public abstract class World
 				}
 				else
 				{
-					getBuilder(subObject, result, ++level);
+					getBuilder(subObject, result, level + 1);
 				}
-			} catch ( IllegalAccessException ex ) {
+			} catch ( IllegalAccessException ex )
+			{
 				System.out.println(ex);
 			}
 			result.append(newLine);
 		}
+		for (int i = 0; i <= level - 1; i++)
+			result.append("  ");
+
 		result.append("}");
 		result.append(newLine);
 	}
@@ -249,31 +248,6 @@ public abstract class World
 	public String toString()
 	{
 		StringBuilder result = new StringBuilder();
-		/*String newLine = System.getProperty("line.separator");
-
-		result.append( this.getClass().getSimpleName() );
-		result.append( " Object {" );
-		result.append(newLine);
-
-		//determine fields declared in this class only (no fields of superclass)
-		Field[] fields = World.getallFields(this.getClass());
-
-		//print field names paired with their values
-		for ( Field field : fields ) {
-			result.append("  ");
-			try {
-				result.append( field.getName() );
-				result.append(": ");
-				//requires access to private field:
-				result.append( field.get(this) );
-			} catch ( IllegalAccessException ex ) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
-
-		return result.toString();*/
 
 		getBuilder(this, result, 0);
 

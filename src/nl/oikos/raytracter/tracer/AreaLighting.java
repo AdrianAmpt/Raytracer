@@ -9,10 +9,10 @@ import nl.oikos.raytracter.world.World;
 /**
  * Created by Adrian on 21-8-2017.
  */
-public class RayCast extends Tracer
+public class AreaLighting extends Tracer
 {
 
-	public RayCast(World world)
+	public AreaLighting(World world)
 	{
 		super(world);
 	}
@@ -24,7 +24,7 @@ public class RayCast extends Tracer
 
 		if (sr.hitAnObject) {
 			sr.ray = ray;			// used for specular shading
-			return sr.material.shade(sr);
+			return sr.material.areaLightShade(sr);
 		}
 		else
 			return world.backgroundColor;
@@ -47,7 +47,7 @@ public class RayCast extends Tracer
 		if (sr.hitAnObject)
 		{
 			sr.ray = ray;			// used for specular shading
-			return sr.material.shade(sr);
+			return sr.material.areaLightShade(sr);
 		}
 		else
 			return world.backgroundColor;

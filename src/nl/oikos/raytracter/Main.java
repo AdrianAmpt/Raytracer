@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class Main implements StatusIndicator
@@ -69,7 +70,46 @@ public class Main implements StatusIndicator
 
 	public void onRenderStart()
 	{
-		canvas.render();
+		CompletableFuture.runAsync(() ->
+		{
+			canvas.render();
+
+			if (canvas.numberOfSamples != canvas.world.viewPlane.sampler.getNumberOfSamples())
+			{
+				switch (canvas.world.viewPlane.sampler.getNumberOfSamples())
+				{
+					case 1:
+						menuSampling.getItem(1).setSelected(true);
+						break;
+					case 4:
+						menuSampling.getItem(2).setSelected(true);
+						break;
+					case 9:
+						menuSampling.getItem(3).setSelected(true);
+						break;
+					case 16:
+						menuSampling.getItem(4).setSelected(true);
+						break;
+					case 25:
+						menuSampling.getItem(5).setSelected(true);
+						break;
+					case 36:
+						menuSampling.getItem(6).setSelected(true);
+						break;
+					case 64:
+						menuSampling.getItem(7).setSelected(true);
+						break;
+					case 144:
+						menuSampling.getItem(8).setSelected(true);
+						break;
+					case 256:
+						menuSampling.getItem(9).setSelected(true);
+						break;
+					default:
+						menuSampling.getItem(0).setSelected(true);
+				}
+			}
+		});
 
 		// start
 		menuRender.getItem(0).setEnabled(false);
@@ -106,42 +146,6 @@ public class Main implements StatusIndicator
 		for(int i = 0; i < menuDisplay.getItemCount(); i++)
 		{
 			menuDisplay.getItem(i).setEnabled(true);
-		}
-
-		if (canvas.numberOfSamples != canvas.world.viewPlane.sampler.getNumberOfSamples())
-		{
-			switch (canvas.world.viewPlane.sampler.getNumberOfSamples())
-			{
-				case 1:
-					menuSampling.getItem(1).setSelected(true);
-					break;
-				case 4:
-					menuSampling.getItem(2).setSelected(true);
-					break;
-				case 9:
-					menuSampling.getItem(3).setSelected(true);
-					break;
-				case 16:
-					menuSampling.getItem(4).setSelected(true);
-					break;
-				case 25:
-					menuSampling.getItem(5).setSelected(true);
-					break;
-				case 36:
-					menuSampling.getItem(6).setSelected(true);
-					break;
-				case 64:
-					menuSampling.getItem(7).setSelected(true);
-					break;
-				case 144:
-					menuSampling.getItem(8).setSelected(true);
-					break;
-				case 256:
-					menuSampling.getItem(9).setSelected(true);
-					break;
-				default:
-					menuSampling.getItem(0).setSelected(true);
-			}
 		}
 
 		for(int i = 0; i < menuSampling.getItemCount(); i++)
@@ -241,16 +245,9 @@ public class Main implements StatusIndicator
 		{
 			FileUtils.getClassesInSamePackage(BuildConstructor.get().getClass()).forEach(c ->
 			{
-				Class<?> superClass = c.getSuperclass();
-
-				while (superClass != null)
+				if (World.class.isAssignableFrom(c))
 				{
-					if (superClass.equals(World.class))
-					{
-						buildFunctions.put(getBuildFunctionName((Class<? extends World>) c), (Class<? extends World>) c);
-						break;
-					}
-					superClass = superClass.getSuperclass();
+					buildFunctions.put(getBuildFunctionName((Class<? extends World>) c), (Class<? extends World>) c);
 				}
 			});
 		}
@@ -279,8 +276,14 @@ public class Main implements StatusIndicator
 
 			JMenu menuBuild = new JMenu("BuildFunctions");
 
-			buildFunctions.forEach((key, function) ->
+			buildFunctions.entrySet()
+					.stream()
+					.sorted(Map.Entry.comparingByKey())
+					.forEach(entry ->
 			{
+				String key = entry.getKey();
+				Class<? extends World> function = entry.getValue();
+
 				JMenuItem menuItem = new JMenuItem(key);
 				menuItem.setEnabled(true);
 				menuItem.addActionListener(e ->

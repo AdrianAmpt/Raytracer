@@ -13,9 +13,9 @@ public class RenderJob extends SwingWorker<Void, RenderedPixel> implements Compa
 	 **          Properties           **
 	 ***********************************/
 
-	private Canvas canvas;
-	private Queue<Pixel> pixels;
-	private int index;
+	private final Canvas canvas;
+	private final Queue<Pixel> pixels;
+	private final int index;
 
 	/***********************************
 	 **          Constructors         **

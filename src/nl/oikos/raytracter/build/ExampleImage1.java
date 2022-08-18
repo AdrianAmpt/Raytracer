@@ -6,10 +6,7 @@ import nl.oikos.raytracter.geometricobject.Sphere;
 import nl.oikos.raytracter.light.Ambient;
 import nl.oikos.raytracter.light.Directional;
 import nl.oikos.raytracter.material.Matte;
-import nl.oikos.raytracter.sampler.Jittered;
 import nl.oikos.raytracter.sampler.MultiJittered;
-import nl.oikos.raytracter.sampler.NRooks;
-import nl.oikos.raytracter.sampler.Regular;
 import nl.oikos.raytracter.tracer.RayCast;
 import nl.oikos.raytracter.util.Normal3D;
 import nl.oikos.raytracter.util.Point3D;
@@ -30,8 +27,8 @@ public class ExampleImage1 extends World
 
 		// view plane  
 
-		viewPlane.setWidth(600);
-		viewPlane.setHeight(600);
+		viewPlane.setWidth(1200);
+		viewPlane.setHeight(1200);
 		viewPlane.setPixelSize(0.5f);
 		//viewPlane.set_samples(numberOfSamples);
 		viewPlane.setSampler(new MultiJittered(numberOfSamples));

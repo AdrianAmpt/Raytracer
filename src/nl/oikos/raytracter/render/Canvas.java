@@ -47,6 +47,8 @@ public class Canvas extends JPanel
 	public RenderDisplay renderDisplay;
 	public RenderMode renderMode;
 
+	protected Timer timer;
+
 	/***********************************
 	 **          Constructors         **
 	 ***********************************/
@@ -270,8 +272,6 @@ public class Canvas extends JPanel
 			}
 		}, 0, 500);
 	}
-
-	Timer timer;
 
 	private List<Pixel> getPixelList(int width, int height, int jobWidth, int jobHeight)
 	{

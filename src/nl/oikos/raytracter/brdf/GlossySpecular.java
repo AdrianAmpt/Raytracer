@@ -43,12 +43,6 @@ public class GlossySpecular extends BRDF
 
 	}*/
 
-	@Override
-	public RGBColor rho(ShadeRec sr, Reference<Vector3D> wo)
-	{
-		return RGBColor.BLACK;
-	}
-
 	public void setKs(double ks)
 	{
 		this.ks = ks;

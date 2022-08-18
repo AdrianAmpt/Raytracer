@@ -1,6 +1,5 @@
 package nl.oikos.raytracter.light;
 
-import nl.oikos.raytracter.geometricobject.GeometricLightObject;
 import nl.oikos.raytracter.geometricobject.GeometricObject;
 import nl.oikos.raytracter.material.Emissive;
 import nl.oikos.raytracter.sampler.Sampler;
@@ -27,10 +26,10 @@ public class EnvironmentLight extends Light
 		Vector3D v = new Vector3D(0.0034, 1, 0.0071).cross(w).normalize();
 		Vector3D u = v.cross(w);
 
-		Point3D sp = sr.lightSamplePoint.computeIfAbsent(this, l -> sampler.sampleHemisphere(sr));
-		Vector3D wi = u.multiply(sp.x).add(v.multiply(sp.y)).add(w.multiply(sp.z));
+		Point3D	sp = sampler.sampleHemisphere(sr);
+		sr.lightSamplePoint.put(this, sp);
 
-		return wi;
+		return u.multiply(sp.x).add(v.multiply(sp.y)).add(w.multiply(sp.z));
 	}
 
 	@Override

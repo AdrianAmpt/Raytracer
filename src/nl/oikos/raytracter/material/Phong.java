@@ -57,6 +57,38 @@ public class Phong extends Material
 		return L;
 	}
 
+	@Override
+	public RGBColor areaLightShade(ShadeRec sr)
+	{
+		Reference<Vector3D> wo = new Reference<>(sr.ray.d.negate());
+		RGBColor L = ambientBRDF.rho(sr, wo).multiply(sr.world.ambientLight.L(sr));
+
+		for (Light light : sr.world.lights)
+		{
+			Reference<Vector3D> wi = new Reference<>(new Vector3D(light.getDirection(sr)));
+			double ndotwi = sr.normal.dot(wi.get());
+
+			if (ndotwi > 0.0)
+			{
+				boolean inShadow = false;
+
+				if (castShadows && light.castShadows())
+				{
+					Ray shadowRay = new Ray(sr.hitPoint, wi.get());
+					inShadow = light.inShadow(shadowRay, sr);
+				}
+
+				if (!inShadow)
+				{
+					L = L.add(diffuseBRDF.f(sr, wo, wi).add(specularBRDF.f(sr, wo, wi)).multiply(light.L(sr)).multiply(ndotwi)).multiply(light.G(sr)).multiply(ndotwi / light.pdf(sr));
+				}
+
+			}
+		}
+
+		return L;
+	}
+
 	public void setKa(double ka)
 	{
 		this.ambientBRDF.setKa(ka);

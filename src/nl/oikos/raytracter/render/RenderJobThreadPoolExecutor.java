@@ -12,8 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RenderJobThreadPoolExecutor extends ThreadPoolExecutor
 {
 	private boolean isPaused;
-	private ReentrantLock pauseLock = new ReentrantLock();
-	private Condition unPaused = pauseLock.newCondition();
+	private final ReentrantLock pauseLock = new ReentrantLock();
+	private final Condition unPaused = pauseLock.newCondition();
 
 	public RenderJobThreadPoolExecutor(int corePoolSize,
 									   int maximumPoolSize,

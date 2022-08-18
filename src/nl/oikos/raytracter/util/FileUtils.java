@@ -13,14 +13,10 @@ import java.util.jar.JarFile;
 
 public class FileUtils
 {
-
-	static int BUFFER_SIZE = 10 * 1024;
-
 	/**
 	 * Attempts to list all the classes in the specified package as determined
 	 * by the context class loader...
 	 *
-	 * @param pckgname the package name to search
 	 * @return a list of classes that exist within that package
 	 * @throws ClassNotFoundException if something went wrong
 	 */
@@ -76,7 +72,7 @@ public class FileUtils
 					directories.add(directory);
 				}
 				if (packageNames == null)
-					packageNames = new HashMap<File, String>();
+					packageNames = new HashMap<>();
 				packageNames.put(directory, pckgname);
 			}
 		}
@@ -199,7 +195,6 @@ public class FileUtils
 		URL url = cs.getLocation();
 		if (url == null)
 			return null;
-		String result = url.getFile();
-		return result;
+		return url.getFile();
 	}
 }

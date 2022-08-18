@@ -1,6 +1,5 @@
 package nl.oikos.raytracter.util;
 
-import nl.oikos.raytracter.light.AreaLight;
 import nl.oikos.raytracter.light.Light;
 import nl.oikos.raytracter.material.Material;
 import nl.oikos.raytracter.world.World;

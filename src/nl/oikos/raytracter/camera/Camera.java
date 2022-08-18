@@ -10,7 +10,7 @@ public abstract class Camera
 {
 	protected Point3D eye;				// eye point
 	protected Point3D lookat; 			// lookat point
-	protected double ra;					// roll angle
+	protected double ra;				// roll angle
 	protected Vector3D u, v, w;			// orthonormal basis vectors
 	protected Vector3D up;				// up vector
 	double exposureTime;

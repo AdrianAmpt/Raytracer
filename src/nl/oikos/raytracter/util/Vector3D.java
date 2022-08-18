@@ -75,7 +75,7 @@ public class Vector3D
 	public Normal3D normalize()
 	{
 		double length = this.length();
-		return new Normal3D(x / length, y / length, z / length);
+		return new Normal3D(x / length, y / length, z / length, 1);
 	}
 
 	/**

@@ -29,7 +29,7 @@ public class Rectangle extends Plane implements GeometricLightObject
 
 	public Rectangle(Point3D p0, Vector3D a, Vector3D b)
 	{
-		super(p0, new Normal3D(a.cross(b).normalize()));
+		super(p0, a.cross(b).normalize());
 
 		this.a = a;
 		this.aLengthSquared = a.lengthSqrd();

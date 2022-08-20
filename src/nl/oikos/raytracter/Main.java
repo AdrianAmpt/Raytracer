@@ -35,6 +35,7 @@ public class Main implements StatusIndicator
 	private JLabel statusMessageLabel;
 	private JLabel etrLabel;
 	private Canvas canvas;
+	private CompletableFuture<Void> renderFuture;
 
 	@Override
 	public void setElapsed(long millis)
@@ -70,7 +71,7 @@ public class Main implements StatusIndicator
 
 	public void onRenderStart()
 	{
-		CompletableFuture.runAsync(() ->
+		renderFuture = CompletableFuture.runAsync(() ->
 		{
 			canvas.render();
 
@@ -211,9 +212,22 @@ public class Main implements StatusIndicator
 		// resume
 		menuRender.getItem(2).setEnabled(true);
 
-		canvas.renderPause();
+		renderFuture.exceptionally((e) ->
+		{
+			e.printStackTrace();
+			return null;
+		});
 
-		setStatusMessage("Pausing rendering");
+		if (!renderFuture.isDone())
+		{
+			renderFuture.cancel(true);
+		}
+		else if (!renderFuture.isCompletedExceptionally())
+		{
+			canvas.renderPause();
+		}
+
+		setStatusMessage("Paused rendering");
 	}
 
 	public void onRenderResume()
@@ -225,9 +239,16 @@ public class Main implements StatusIndicator
 		// resume
 		menuRender.getItem(2).setEnabled(false);
 
-		canvas.renderResume();
+		if (!renderFuture.isDone() || renderFuture.isCompletedExceptionally())
+		{
+			this.onRenderStart();
+		}
+		else
+		{
+			canvas.renderResume();
 
-		setStatusMessage("Rendering...");
+			setStatusMessage("Rendering...");
+		}
 	}
 
 	public static String getBuildFunctionName(Class<? extends World> clazz)

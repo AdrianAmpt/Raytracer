@@ -283,7 +283,7 @@ public class Canvas extends JPanel
 			case SPIRAL_OUT:
 			case SPIRAL_IN_AND_OUT:
 			case SPIRAL_IN_AND_OUT2:
-				toRender = spiral(0,0, width - 1, height - 1, width, height, Direction.RIGHT);
+				toRender = spiral(width - 1, height - 1, width, height);
 
 				if (renderMode == RenderMode.SPIRAL_OUT)
 					Collections.reverse(toRender);
@@ -430,69 +430,69 @@ public class Canvas extends JPanel
 		return toRender;
 	}
 
-	private List<Pixel> spiral(int x, int y, int width, int height, int viewPlaneWidth, int viewPlaneHeight, Direction direction)
+	private List<Pixel> spiral(int width, int height, int viewPlaneWidth, int viewPlaneHeight)
 	{
-		List<Pixel> currentList = new ArrayList<>();
-		Direction newDirection = Direction.RIGHT;
+		int x = 0;
+		int y = 0;
+		List<Pixel> currentList = new ArrayList<>(pixelsToRender);
 		int value;
+		Direction direction = Direction.RIGHT;
 
-		switch (direction)
+		do
 		{
-			case RIGHT:
-				value = width;
-				while (x <= value)
-				{
-					currentList.add(new Pixel(x,y));
-					++x;
-				}
-				--x;
-				++y;
-				newDirection = Direction.UP;
-				break;
-			case UP:
-				value = height;
-				while (y <= value)
-				{
-					currentList.add(new Pixel(x,y));
-					++y;
-				}
-				--y;
-				newDirection = Direction.LEFT;
-				break;
-			case LEFT:
-				value = viewPlaneWidth - (width + 1);
-				while (x > value)
-				{
+			switch (direction)
+			{
+				case RIGHT:
+					value = width;
+					while (x <= value)
+					{
+						currentList.add(new Pixel(x, y));
+						++x;
+					}
 					--x;
-					currentList.add(new Pixel(x,y));
-				}
-				if(width >= 1)
-					width -= 1;
-
-				newDirection =Direction.DOWN;
-				break;
-			case DOWN:
-				if (height >= 1)
-				{
-					height -= 1;
-				}
-
-				value = viewPlaneHeight - (height + 1);
-				while(y > value)
-				{
+					++y;
+					direction = Direction.UP;
+					break;
+				case UP:
+					value = height;
+					while (y <= value)
+					{
+						currentList.add(new Pixel(x, y));
+						++y;
+					}
 					--y;
-					currentList.add(new Pixel(x,y));
-				}
-				newDirection = Direction.RIGHT;
-				++x;
-				break;
-		}
+					direction = Direction.LEFT;
+					break;
+				case LEFT:
+					value = viewPlaneWidth - (width + 1);
+					while (x > value)
+					{
+						--x;
+						currentList.add(new Pixel(x, y));
+					}
+					if (width >= 1)
+						width -= 1;
 
-		if (!(width <= 0 && height <= 0) && currentList.size() != 0)
-		{
-			List<Pixel> addList = this.spiral(x, y, width, height, viewPlaneWidth, viewPlaneHeight, newDirection);
-			currentList.addAll(addList);
+					direction = Direction.DOWN;
+					break;
+				case DOWN:
+					if (height >= 1)
+					{
+						height -= 1;
+					}
+
+					value = viewPlaneHeight - (height + 1);
+					while (y > value)
+					{
+						--y;
+						currentList.add(new Pixel(x, y));
+					}
+					direction = Direction.RIGHT;
+					++x;
+					break;
+			}
 		}
+		while (!(width <= 0 && height <= 0) && currentList.size() != 0);
 
 		return currentList;
 	}
